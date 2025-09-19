@@ -1,58 +1,63 @@
 <template>
-  <div class="grid grid-cols-[1fr_auto] items-start gap-2 border rounded p-3">
-    <div class="grid gap-3 md:grid-cols-4">
+  <div class="grid grid-cols-[1fr_auto] items-start gap-2">
+    <div class="grid gap-3 md:grid-cols-[1fr_0.5fr_1fr_1fr]">
       <FormField :name="`${base}.labels`" v-slot="{ componentField, meta }">
         <FormItem>
           <FormControl>
-            <Input
-              v-bind="componentField"
-              placeholder="a; b; c"
-              @blur="validateAndSaveRow"
-              :aria-invalid="!meta.valid && meta.validated"
-            />
+            <Input v-bind="componentField" placeholder="a; b; c" @blur="validateAndSaveRow" :aria-invalid="!meta.valid && meta.validated" />
           </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField :name="`${base}.type`" v-slot="{ componentField }">
+      <FormField :name="`${base}.type`" v-slot="{ componentField, value }">
         <FormItem>
-          <Select v-bind="componentField">
-            <FormControl>
-              <SelectTrigger>
+          <FormControl>
+            <Select
+              v-bind="componentField"
+              :defaultValue="value"
+              :modelValue="value"
+              @update:modelValue="(val) => handleTypeChange(val as 'local' | 'ldap')"
+            >
+              <SelectTrigger class="w-full">
                 <SelectValue placeholder="Выберите тип" />
               </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectItem value="local">Локальная</SelectItem>
-              <SelectItem value="ldap">LDAP</SelectItem>
-            </SelectContent>
-          </Select>
+
+              <SelectContent>
+                <SelectItem value="local">Локальная</SelectItem>
+                <SelectItem value="ldap">LDAP</SelectItem>
+              </SelectContent>
+            </Select>
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
       <FormField :name="`${base}.login`" v-slot="{ componentField, meta }">
-        <FormItem>
+        <FormItem :class="{ 'col-span-2': values.accounts?.[index]?.type === 'ldap' }">
           <FormControl>
             <Input
               v-bind="componentField"
               @blur="validateAndSaveRow"
               :aria-invalid="!meta.valid && meta.validated"
+              placeholder="логин"
+              autocomplete="username"
             />
           </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField :name="`${base}.password`" v-slot="{ componentField, meta, form }">
+      <FormField :name="`${base}.password`" v-slot="{ componentField, meta }" v-if="values.accounts?.[index]?.type === 'local'">
         <FormItem>
           <FormControl>
             <PasswordInput
               v-bind="componentField"
-              :disabled="form?.values?.accounts?.[index]?.type === 'ldap'"
+              :disabled="values.accounts?.[index]?.type === 'ldap'"
               @blur="validateAndSaveRow"
               :aria-invalid="!meta.valid && meta.validated"
+              placeholder="пароль"
+              autocomplete="current-password"
             />
           </FormControl>
           <FormMessage />
@@ -67,7 +72,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useForm } from 'vee-validate'
+import type { FormContext, PathValue } from 'vee-validate'
 import type { AccountsFormInput } from '../model/schema'
 import { useAccountsStore } from '../model/accountsStore'
 import { parseLabels } from '../utils/labels'
@@ -79,31 +84,40 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/shared/ui/button'
 import { Trash2 } from 'lucide-vue-next'
 
+type Row = AccountsFormInput['accounts'][number]
+type RowKey = keyof Row
+type RowPath<K extends RowKey> = `accounts[${number}].${K}`
+
 const props = defineProps<{
   index: number
+  form: FormContext<AccountsFormInput>
 }>()
+
+const rowPath = <K extends RowKey>(key: K): RowPath<K> => `accounts[${props.index}].${key}` as RowPath<K>
 
 const emit = defineEmits<{
   (e: 'remove'): void
 }>()
 
-const { values, validateField, setFieldValue } = useForm<AccountsFormInput>()
+const { values, validateField, setFieldValue } = props.form
 const accountsStore = useAccountsStore()
 
 const base = computed(() => `accounts[${props.index}]`)
 
+function setRowField<K extends RowKey>(key: K, value: Row[K]) {
+  const p = rowPath(key)
+  setFieldValue(p, value as PathValue<AccountsFormInput, typeof p>)
+}
+
 async function validateAndSaveRow() {
-  type FieldName = Parameters<typeof validateField>[0]
+  const names = [rowPath('type'), rowPath('login'), rowPath('password')]
 
-  const names = [
-    `${base.value}.type`,
-    `${base.value}.login`,
-    `${base.value}.password`,
-  ] as unknown as FieldName[]
-
-  const results = await Promise.all(names.map((name) => validateField(name)))
-  const ok = results.every((res) => !res)
-
+  const results = await Promise.all(
+    names.map((name) => {
+      return validateField(name)
+    }),
+  )
+  const ok = results.every((res) => res.valid)
   if (!ok) return
 
   const row = values.accounts[props.index]
@@ -111,26 +125,15 @@ async function validateAndSaveRow() {
   accountsStore.upsert({
     id: row.id,
     type: row.type,
-    login: row.login.trim(),
-    password: row.type === 'local' ? (row.password ?? '') : undefined,
+    login: row.login?.trim(),
+    password: row.type === 'local' ? (row.password ?? '') : null,
     labels: parseLabels(row.labels || ''),
   })
 }
 
 function handleTypeChange(next: 'local' | 'ldap') {
-  setFieldValue(`${base.value}.type`, next)
-  if (next === 'ldap') {
-    setFieldValue(`${base.value}.password`, '')
-  }
-
+  setRowField('type', next)
+  if (next === 'ldap') setRowField('password', '')
   validateAndSaveRow()
 }
-
-function onTypeSelect(val: unknown) {
-  if (val !== 'local' && val !== 'ldap') return
-
-  handleTypeChange(val)
-}
 </script>
-
-<style scoped></style>

@@ -27,12 +27,13 @@ const isDisabled = computed(() => props.disabled)
 </script>
 
 <template>
-  <div class="relative w-full max-w-sm items-center">
+  <div class="relative w-full max-w-sm items-center" v-bind="$attrs" inheritAttrs="false">
     <Input
       v-model="modelValue"
       :type="showPassword ? 'text' : 'password'"
       :class="cn('pr-10', props.class)"
       :disabled="props.disabled"
+      v-bind="$attrs"
     />
     <Button
       type="button"
@@ -41,11 +42,7 @@ const isDisabled = computed(() => props.disabled)
       :class="{ 'cursor-not-allowed opacity-50': isDisabled }"
       @click="showPassword = !showPassword"
     >
-      <EyeIcon
-        v-if="showPassword && !isDisabled"
-        class="size-4 text-muted-foreground"
-        aria-hidden="true"
-      />
+      <EyeIcon v-if="showPassword && !isDisabled" class="size-4 text-muted-foreground" aria-hidden="true" />
       <EyeOffIcon v-else class="size-4 text-muted-foreground" aria-hidden="true" />
       <span class="sr-only">{{ showPassword ? 'Скрыть пароль' : 'Показать пароль' }}</span>
     </Button>

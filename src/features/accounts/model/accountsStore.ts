@@ -17,6 +17,7 @@ export const useAccountsStore = defineStore(
       records.value = records.value.filter((r) => r.id !== id)
     }
 
+    
     return { records, upsert, remove }
   },
   {
