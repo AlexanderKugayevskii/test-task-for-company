@@ -1,3 +1,4 @@
+import 'pinia-plugin-persistedstate'
 import { defineStore } from 'pinia'
 import type { AccountRecord } from '../types'
 import { ref } from 'vue'
@@ -17,7 +18,6 @@ export const useAccountsStore = defineStore(
       records.value = records.value.filter((r) => r.id !== id)
     }
 
-    
     return { records, upsert, remove }
   },
   {

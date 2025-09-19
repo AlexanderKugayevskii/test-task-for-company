@@ -41,7 +41,7 @@
               @blur="validateAndSaveRow"
               :aria-invalid="!meta.valid && meta.validated"
               placeholder="логин"
-              autocomplete="username"
+              autocomplete="off"
             />
           </FormControl>
           <FormMessage />
@@ -57,7 +57,7 @@
               @blur="validateAndSaveRow"
               :aria-invalid="!meta.valid && meta.validated"
               placeholder="пароль"
-              autocomplete="current-password"
+              autocomplete="new-password"
             />
           </FormControl>
           <FormMessage />
