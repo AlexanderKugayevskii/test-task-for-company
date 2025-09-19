@@ -1,45 +1,93 @@
-# test-task-saasoft
+# 📒 Accounts Management App
 
-This template should help get you started developing with Vue 3 in Vite.
+## 📋 Описание проекта
+Это **демо-приложение для управления учётными записями**, написанное на **Vue 3 + Pinia + Vee Validate + shadcn-vue + Zod**.  
 
-## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Основной функционал:
+- 📑 **Добавление/удаление** учетных записей  
+- ✅ **Валидация** обязательных полей (логин, пароль для локальных аккаунтов)  
+- 🔄 **Автосохранение** данных в Pinia + LocalStorage  
+- 🧩 **Разделение на компоненты** (`AccountsHeader`, `AccountsForm`, `AccountRow`)  
+- 🧪 **Тесты** на utils, схему, стор и интеграцию Header→Form  
+- 🐳 **Docker-сборка** с Nginx для прод-версии  
 
-## Type Support for `.vue` Imports in TS
+---
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## 🛠️ Стек
+- **Vue 3**, **Pinia**, **Vee Validate**, **Zod**
+- **shadcn-vue** (UI-компоненты)
+- **Vitest** + **@vue/test-utils** для тестов
+- **Docker** + **Nginx** для деплоя
 
-## Customize configuration
+---
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## 🚀 Запуск локально (dev)
 
-## Project Setup
+1. Клонируйте репозиторий  
+   ```bash
+   git clone https://github.com/yourname/accounts-app.git
+   cd accounts-app
+   ```
 
-```sh
-pnpm install
-```
+2. Установите зависимости  
+   ```bash
+   pnpm install
+   ```
+   (или `npm install` если без pnpm)
 
-### Compile and Hot-Reload for Development
+3. Запустите dev-сервер  
+   ```bash
+   pnpm dev
+   ```
+   По умолчанию Vite поднимет сервер на **http://localhost:5173** (порт 5173).
 
-```sh
-pnpm dev
-```
+---
 
-### Type-Check, Compile and Minify for Production
+## 🧪 Прогон тестов
 
-```sh
-pnpm build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
+```bash
 pnpm test:unit
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+Тесты utils, схемы, стора и интеграции Header→Form.
 
-```sh
-pnpm lint
+---
+
+## 🐳 Запуск через Docker
+
+1. Соберите контейнер и запустите:
+   ```bash
+   docker compose up --build -d
+   ```
+2. Приложение откроется на **http://localhost:8080** (порт можно поменять в `docker-compose.yml`).
+
+3. Остановить:
+   ```bash
+   docker compose down
+   ```
+
+---
+
+## 🐳 Прогон тестов в Docker (опционально)
+
+Если настроен `test` stage:
+```bash
+docker compose --profile test up --build --abort-on-container-exit test
 ```
+
+---
+
+## 📂 Структура проекта (главное)
+```
+src/
+ ├─ features/accounts/
+ │   ├─ model/        # store, schema
+ │   ├─ ui/           # компоненты UI
+ │   ├─ utils/        # parseLabels, etc.
+ │   └─ __tests__/    # юнит и интеграционные тесты
+ ├─ shared/ui/        # общие UI-компоненты (shadcn-vue)
+```
+
+
+
