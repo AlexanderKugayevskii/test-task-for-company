@@ -27,7 +27,7 @@
 1. Клонируйте репозиторий  
    ```bash
    git clone git@github.com:AlexanderKugayevskii/test-task-saasoft.git
-   cd accounts-app
+   cd test-task-saasoft
    ```
 
 2. Установите зависимости  
