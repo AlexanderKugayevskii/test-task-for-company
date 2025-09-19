@@ -26,7 +26,7 @@
 
 1. Клонируйте репозиторий  
    ```bash
-   git clone https://github.com/yourname/accounts-app.git
+   git clone git@github.com:AlexanderKugayevskii/test-task-saasoft.git
    cd accounts-app
    ```
 
