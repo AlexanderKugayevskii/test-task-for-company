@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-[1fr_auto] items-start gap-2">
+  <div class="grid grid-cols-[1fr_auto] items-start gap-2" data-test="account-row">
     <div class="grid gap-3 md:grid-cols-[1fr_0.5fr_1fr_1fr]">
       <FormField :name="`${base}.labels`" v-slot="{ componentField, meta }">
         <FormItem>
