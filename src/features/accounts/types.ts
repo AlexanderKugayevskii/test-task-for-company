@@ -7,5 +7,5 @@ export type AccountRecord = {
   labels: AccountLabel[]
   type: AccountType
   login: string
-  password?: string | null
+  password: string | null
 }
