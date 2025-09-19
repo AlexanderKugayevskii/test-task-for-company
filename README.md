@@ -69,15 +69,6 @@ pnpm test:unit
 
 ---
 
-## 🐳 Прогон тестов в Docker (опционально)
-
-Если настроен `test` stage:
-```bash
-docker compose --profile test up --build --abort-on-container-exit test
-```
-
----
-
 ## 📂 Структура проекта (главное)
 ```
 src/
