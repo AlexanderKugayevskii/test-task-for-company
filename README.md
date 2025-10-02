@@ -28,8 +28,8 @@
 
 1. Клонируйте репозиторий  
    ```bash
-   git clone git@github.com:AlexanderKugayevskii/test-task-saasoft.git
-   cd test-task-saasoft
+   git clone git@github.com:AlexanderKugayevskii/test-task-for-company.git
+   cd test-task-for-company
    ```
 
 2. Установите зависимости  
